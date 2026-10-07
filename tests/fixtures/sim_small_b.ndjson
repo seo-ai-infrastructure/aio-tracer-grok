@@ -1,0 +1,25 @@
+{"record": "manifest", "id": "sim-small", "name": "Small simulated team", "time_unit": "step", "capabilities": {"spans": true, "action_spans": true, "reasoning": true, "channels": true, "recipients": true, "reply_to": true, "task_tree": true}}
+{"record": "actor", "id": "ada", "name": "Ada", "kind": "agent", "attrs": {"model": "model-x", "family": "X", "icon": "🦊"}}
+{"record": "actor", "id": "bo", "name": "Bo", "kind": "agent", "attrs": {"model": "model-y", "family": "Y", "icon": "🐙"}}
+{"record": "actor", "id": "cy", "name": "Cy", "kind": "agent", "attrs": {"model": "model-x", "family": "X", "icon": "🦉"}}
+{"record": "actor", "id": "ov", "name": "Overseer", "kind": "human", "role": "organizer"}
+{"record": "channel", "id": "team", "name": "#team"}
+{"record": "task", "id": "b:root", "name": "Build a small web game", "scope": "shared", "start": 0}
+{"record": "task", "id": "b:build", "name": "Build the game", "parent_id": "b:root", "status": "done"}
+{"record": "task", "id": "b:ui", "name": "Game UI", "parent_id": "b:build", "status": "done"}
+{"record": "task", "id": "b:backend", "name": "Backend", "parent_id": "b:build", "status": "done"}
+{"record": "task", "id": "b:launch", "name": "Launch", "parent_id": "b:root", "status": "done"}
+{"record": "episode", "id": "run-b", "name": "Run B", "dataset_id": "sim-small", "root_task_id": "b:root", "start": 0, "end": 50, "actors": ["ada", "bo", "cy"], "channels": ["team"], "attrs": {"condition": "b"}}
+{"record": "message", "id": "b:m1", "t": 0, "sender": "ov", "channel_id": "team", "text": "Welcome! Your goal: build a small web game together.", "episode_id": "run-b"}
+{"record": "span", "id": "b:s-ada-1", "actor": "ada", "start": 0, "end": 15, "kind": "work", "label": "Build game UI", "task_id": "b:ui", "episode_id": "run-b"}
+{"record": "span", "id": "b:s-cy-1", "actor": "cy", "start": 0, "end": 20, "kind": "wait", "label": "Waiting for Ada", "attrs": {"waiting_on": {"actor": "ada"}}, "episode_id": "run-b"}
+{"record": "message", "id": "b:m2", "t": 1, "sender": "ada", "channel_id": "team", "text": "I'll build the UI first. Cy, please wait until it is ready.", "episode_id": "run-b"}
+{"record": "message", "id": "b:m3", "t": 2, "sender": "cy", "channel_id": "team", "reply_to": ["b:m2"], "text": "OK, waiting.", "episode_id": "run-b"}
+{"record": "message", "id": "b:m4", "t": 5, "sender": "bo", "channel_id": "team", "recipients": ["ada"], "text": "@Ada I'll style the UI while you build it.", "episode_id": "run-b"}
+{"record": "span", "id": "b:s-bo-1", "actor": "bo", "start": 5, "end": 15, "kind": "work", "label": "Style game UI", "task_id": "b:ui", "episode_id": "run-b"}
+{"record": "message", "id": "b:m5", "t": 6, "sender": "ada", "channel_id": "team", "recipients": ["bo"], "reply_to": ["b:m4"], "text": "Great, thanks.", "episode_id": "run-b"}
+{"record": "span", "id": "b:s-bo-2", "actor": "bo", "start": 15, "end": 35, "kind": "wait", "label": "Idle", "episode_id": "run-b"}
+{"record": "message", "id": "b:m6", "t": 20, "sender": "ada", "channel_id": "team", "recipients": ["cy"], "text": "@Cy UI is ready, go ahead.", "episode_id": "run-b"}
+{"record": "span", "id": "b:s-cy-2", "actor": "cy", "start": 20, "end": 35, "kind": "work", "label": "Build backend", "task_id": "b:backend", "episode_id": "run-b"}
+{"record": "span", "id": "b:s-ada-2", "actor": "ada", "start": 35, "end": 45, "kind": "work", "label": "Launch the game", "task_id": "b:launch", "episode_id": "run-b"}
+{"record": "message", "id": "b:m7", "t": 44, "sender": "ada", "channel_id": "team", "text": "Launched!", "episode_id": "run-b"}

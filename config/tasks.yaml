@@ -1,0 +1,6 @@
+# Task-tree inference (collab/tasks.py). The tree is built top-down and a node is split only
+# where the evidence supports it; max_depth is a safety net, not a design limit.
+split_min_spans: 8        # a node holding more work spans than this gets its own split call
+min_spans_per_node: 3     # a child needs this many spans, or a distinct artifact (anchor terms)
+max_depth: 6              # including the root (the goal)
+effort: high              # LLM effort for split calls

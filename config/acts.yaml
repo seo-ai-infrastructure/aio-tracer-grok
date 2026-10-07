@@ -1,0 +1,8 @@
+# Speech-act labeling (collab/speech.py, scripts/label_acts.py)
+window: 40              # messages labeled per call
+context: 25             # messages just before the window, shown as link targets (not labeled)
+context_chars: 400      # each context message is cut to about this many characters
+sentence_chars: 600     # very long sentences are cut in the prompt (the label still covers all of it)
+commitments: 6          # each speaker's latest earlier commitments offered as "fulfills" targets
+horizon: {s: 86400, step: 100}  # how far back those commitments may be
+effort: medium          # low tagged acts well but linked reports to promises too loosely

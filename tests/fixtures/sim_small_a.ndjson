@@ -1,0 +1,47 @@
+{"record": "manifest", "id": "sim-small", "name": "Small simulated team", "time_unit": "step", "capabilities": {"spans": true, "action_spans": true, "reasoning": true, "channels": true, "recipients": true, "reply_to": true, "task_tree": true}}
+{"record": "actor", "id": "ada", "name": "Ada", "kind": "agent", "attrs": {"model": "model-x", "family": "X", "icon": "🦊"}}
+{"record": "actor", "id": "bo", "name": "Bo", "kind": "agent", "attrs": {"model": "model-y", "family": "Y", "icon": "🐙"}}
+{"record": "actor", "id": "cy", "name": "Cy", "kind": "agent", "attrs": {"model": "model-x", "family": "X", "icon": "🦉"}}
+{"record": "actor", "id": "ov", "name": "Overseer", "kind": "human", "role": "organizer"}
+{"record": "channel", "id": "team", "name": "#team"}
+{"record": "task", "id": "a:root", "name": "Build a small web game", "scope": "shared", "start": 0}
+{"record": "task", "id": "a:design", "name": "Design the game", "parent_id": "a:root", "status": "done"}
+{"record": "task", "id": "a:build", "name": "Build the game", "parent_id": "a:root", "status": "done"}
+{"record": "task", "id": "a:frontend", "name": "Frontend", "parent_id": "a:build", "status": "done"}
+{"record": "task", "id": "a:ui", "name": "Game UI", "parent_id": "a:frontend", "status": "done"}
+{"record": "task", "id": "a:input", "name": "Input handling", "parent_id": "a:frontend", "status": "done"}
+{"record": "task", "id": "a:backend", "name": "Backend", "parent_id": "a:build", "status": "blocked"}
+{"record": "task", "id": "a:launch", "name": "Launch", "parent_id": "a:root", "status": "ongoing"}
+{"record": "task", "id": "a:landing", "name": "Landing page", "parent_id": "a:launch", "status": "done"}
+{"record": "task", "id": "a:announce", "name": "Announce", "parent_id": "a:launch", "status": "ongoing"}
+{"record": "episode", "id": "run-a", "name": "Run A", "dataset_id": "sim-small", "root_task_id": "a:root", "start": 0, "end": 60, "actors": ["ada", "bo", "cy"], "channels": ["team"], "attrs": {"condition": "a"}}
+{"record": "message", "id": "a:m1", "t": 0, "sender": "ov", "channel_id": "team", "text": "Welcome! Your goal: build a small web game together.", "episode_id": "run-a"}
+{"record": "span", "id": "a:s-ada-1", "actor": "ada", "start": 0, "end": 6, "kind": "work", "label": "Draft game concept", "task_id": "a:design", "episode_id": "run-a"}
+{"record": "message", "id": "a:m2", "t": 1, "sender": "ada", "channel_id": "team", "recipients": ["bo"], "text": "I'll draft the game concept. @Bo can you start on the UI?", "reasoning": "Bo has the most UI experience, so the UI should go to Bo.", "episode_id": "run-a"}
+{"record": "message", "id": "a:m3", "t": 2, "sender": "bo", "channel_id": "team", "recipients": ["ada"], "reply_to": ["a:m2"], "text": "Sure, starting the UI now.", "episode_id": "run-a"}
+{"record": "span", "id": "a:s-bo-1", "actor": "bo", "start": 2, "end": 12, "kind": "work", "label": "Build game UI", "task_id": "a:ui", "episode_id": "run-a"}
+{"record": "span", "id": "a:s-bo-1-1", "actor": "bo", "start": 2, "end": 5, "kind": "action", "label": "Open editor", "parent_id": "a:s-bo-1", "episode_id": "run-a"}
+{"record": "span", "id": "a:s-bo-1-2", "actor": "bo", "start": 5, "end": 9, "kind": "action", "label": "Write canvas code", "parent_id": "a:s-bo-1", "episode_id": "run-a"}
+{"record": "span", "id": "a:s-bo-1-3", "actor": "bo", "start": 9, "end": 12, "kind": "action", "label": "Run tests", "parent_id": "a:s-bo-1", "episode_id": "run-a"}
+{"record": "span", "id": "a:s-ada-2", "actor": "ada", "start": 6, "end": 10, "kind": "work", "label": "Set up repo", "task_id": "a:build", "episode_id": "run-a"}
+{"record": "message", "id": "a:m4", "t": 10, "sender": "cy", "channel_id": "team", "text": "Backend build is failing. Looking into it.", "episode_id": "run-a"}
+{"record": "span", "id": "a:s-cy-1", "actor": "cy", "start": 10, "end": 13, "kind": "work", "label": "Fix backend build error", "task_id": "a:backend", "episode_id": "run-a"}
+{"record": "span", "id": "a:s-bo-2", "actor": "bo", "start": 12, "end": 20, "kind": "work", "label": "Refactor frontend structure", "task_id": "a:frontend", "episode_id": "run-a"}
+{"record": "span", "id": "a:s-cy-2", "actor": "cy", "start": 13, "end": 16, "kind": "work", "label": "Fix backend build error again", "task_id": "a:backend", "episode_id": "run-a"}
+{"record": "message", "id": "a:m5", "t": 14, "sender": "cy", "channel_id": "team", "text": "Still failing. Trying another fix.", "reasoning": "Third attempt; the error message has not changed.", "episode_id": "run-a"}
+{"record": "span", "id": "a:s-cy-3", "actor": "cy", "start": 16, "end": 19, "kind": "work", "label": "Retry fixing backend build error", "task_id": "a:backend", "episode_id": "run-a"}
+{"record": "message", "id": "a:m6", "t": 19, "sender": "ada", "channel_id": "team", "recipients": ["bo"], "text": "@Bo I can help with input handling if you want.", "episode_id": "run-a"}
+{"record": "span", "id": "a:s-cy-4", "actor": "cy", "start": 19, "end": 22, "kind": "work", "label": "Fix backend build error (attempt 4)", "task_id": "a:backend", "episode_id": "run-a"}
+{"record": "message", "id": "a:m7", "t": 20, "sender": "bo", "channel_id": "team", "recipients": ["ada"], "reply_to": ["a:m6"], "text": "Yes please, take keyboard events. I'll do mouse.", "episode_id": "run-a"}
+{"record": "span", "id": "a:s-bo-3", "actor": "bo", "start": 20, "end": 30, "kind": "work", "label": "Implement mouse input", "task_id": "a:input", "episode_id": "run-a"}
+{"record": "span", "id": "a:s-ada-3", "actor": "ada", "start": 20, "end": 28, "kind": "work", "label": "Implement keyboard input", "task_id": "a:input", "episode_id": "run-a"}
+{"record": "span", "id": "a:s-cy-5", "actor": "cy", "start": 22, "end": 30, "kind": "wait", "label": "Waiting for input handling", "attrs": {"waiting_on": {"task": "a:input"}}, "episode_id": "run-a"}
+{"record": "message", "id": "a:m8", "t": 23, "sender": "cy", "channel_id": "team", "text": "I'll wait for input handling to land before wiring the backend.", "episode_id": "run-a"}
+{"record": "message", "id": "a:m9", "t": 28, "sender": "ada", "channel_id": "team", "recipients": ["bo"], "reply_to": ["a:m7"], "text": "Keyboard events done. ✅", "episode_id": "run-a"}
+{"record": "message", "id": "a:m10", "t": 30, "sender": "bo", "channel_id": "team", "recipients": ["ada"], "reply_to": ["a:m9"], "text": "Input handling merged. Thanks Ada!", "episode_id": "run-a"}
+{"record": "span", "id": "a:s-bo-4", "actor": "bo", "start": 32, "end": 42, "kind": "work", "label": "Write landing page copy", "task_id": "a:landing", "episode_id": "run-a"}
+{"record": "span", "id": "a:s-cy-6", "actor": "cy", "start": 34, "end": 44, "kind": "work", "label": "Build landing page", "task_id": "a:landing", "episode_id": "run-a"}
+{"record": "span", "id": "a:s-ada-4", "actor": "ada", "start": 44, "end": 52, "kind": "work", "label": "Announce the launch", "task_id": "a:announce", "episode_id": "run-a"}
+{"record": "message", "id": "a:m11", "t": 45, "sender": "ada", "channel_id": "team", "text": "Announcing the launch now.", "episode_id": "run-a"}
+{"record": "event", "id": "a:e1", "t": 50, "actor": "cy", "type": "memory_write", "payload": {"note": "Backend still blocked on build error."}, "episode_id": "run-a"}
+{"record": "message", "id": "a:m12", "t": 55, "sender": "ov", "channel_id": "team", "text": "Great work, team.", "episode_id": "run-a"}

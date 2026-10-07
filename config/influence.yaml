@@ -1,0 +1,6 @@
+# Influence: who got whom to work (collab/influence.py).
+lookback: {s: 7200, step: 20}   # look this far before a worker's first session for asks and proposals
+lookahead: {s: 600, step: 2}    # and a little after the last worker started (acknowledgements)
+max_candidates: 40              # candidate messages shown to the model per task
+snippet_chars: 400              # long messages are cut to this many characters around the mention
+effort: medium                  # LLM effort for trigger calls

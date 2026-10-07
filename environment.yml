@@ -1,0 +1,27 @@
+# Recreates the `pyc` conda env inside the dev container.
+# Mirror any extra packages from your laptop env here
+# (`conda env export --from-history` on the Mac is a good starting point).
+name: pyc
+channels:
+  - conda-forge
+dependencies:
+  - python=3.13
+  - pip
+  - ipykernel
+  - ipywidgets   # silences the tqdm IProgress warning
+  - pip:
+      # collab pipeline + server (see /home/vscode/.claude/plans/i-want-to-create-stateful-island.md)
+      - anthropic
+      - huggingface_hub
+      - fastapi
+      - uvicorn
+      - jsonschema
+      - pyyaml
+      - pytest
+  # - matplotlib
+  # - pytables     # pandas to_hdf/read_hdf, used by ToyDataset to cache the concept graph
+  # - pip:
+  #     # CPU-only torch wheels: much smaller than the default CUDA build
+  #     - --extra-index-url https://download.pytorch.org/whl/cpu
+  #     - torch
+  #     - pytorch-concepts==1.0.0a5

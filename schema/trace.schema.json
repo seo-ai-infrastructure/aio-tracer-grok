@@ -1,0 +1,181 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "collab-trace/v1",
+  "title": "Collaboration trace record",
+  "description": "One line of a collab trace (NDJSON). The same records are used for static files and for streaming. Records are upserts by (record, id): op 'put' (default) replaces a record, op 'patch' updates only the fields given. Times are numbers: epoch seconds when manifest.time_unit is 's', integer steps when it is 'step'.",
+  "type": "object",
+  "required": ["record", "id"],
+  "properties": {
+    "record": {"enum": ["manifest", "actor", "channel", "task", "episode", "message", "span", "event"]},
+    "op": {"enum": ["put", "patch"], "default": "put"},
+    "id": {"$ref": "#/$defs/id"}
+  },
+  "allOf": [
+    {"if": {"properties": {"record": {"const": "manifest"}}}, "then": {"$ref": "#/$defs/select/manifest"}},
+    {"if": {"properties": {"record": {"const": "actor"}}}, "then": {"$ref": "#/$defs/select/actor"}},
+    {"if": {"properties": {"record": {"const": "channel"}}}, "then": {"$ref": "#/$defs/select/channel"}},
+    {"if": {"properties": {"record": {"const": "task"}}}, "then": {"$ref": "#/$defs/select/task"}},
+    {"if": {"properties": {"record": {"const": "episode"}}}, "then": {"$ref": "#/$defs/select/episode"}},
+    {"if": {"properties": {"record": {"const": "message"}}}, "then": {"$ref": "#/$defs/select/message"}},
+    {"if": {"properties": {"record": {"const": "span"}}}, "then": {"$ref": "#/$defs/select/span"}},
+    {"if": {"properties": {"record": {"const": "event"}}}, "then": {"$ref": "#/$defs/select/event"}}
+  ],
+  "$defs": {
+    "id": {"type": "string", "minLength": 1},
+    "ids": {"type": "array", "items": {"$ref": "#/$defs/id"}},
+    "time": {"type": "number"},
+    "attrs": {"type": "object", "description": "Free-form, source-specific extras."},
+    "patch": {"properties": {"op": {"const": "patch"}}, "required": ["op"]},
+
+    "select": {
+      "manifest": {"if": {"$ref": "#/$defs/patch"}, "then": {"$ref": "#/$defs/fields/manifest"}, "else": {"allOf": [{"$ref": "#/$defs/fields/manifest"}, {"required": ["time_unit"]}]}},
+      "actor": {"if": {"$ref": "#/$defs/patch"}, "then": {"$ref": "#/$defs/fields/actor"}, "else": {"allOf": [{"$ref": "#/$defs/fields/actor"}, {"required": ["name", "kind"]}]}},
+      "channel": {"if": {"$ref": "#/$defs/patch"}, "then": {"$ref": "#/$defs/fields/channel"}, "else": {"allOf": [{"$ref": "#/$defs/fields/channel"}, {"required": ["name"]}]}},
+      "task": {"if": {"$ref": "#/$defs/patch"}, "then": {"$ref": "#/$defs/fields/task"}, "else": {"allOf": [{"$ref": "#/$defs/fields/task"}, {"required": ["name"]}]}},
+      "episode": {"if": {"$ref": "#/$defs/patch"}, "then": {"$ref": "#/$defs/fields/episode"}, "else": {"allOf": [{"$ref": "#/$defs/fields/episode"}, {"required": ["root_task_id", "start", "actors"]}]}},
+      "message": {"if": {"$ref": "#/$defs/patch"}, "then": {"$ref": "#/$defs/fields/message"}, "else": {"allOf": [{"$ref": "#/$defs/fields/message"}, {"required": ["t", "sender", "text"]}]}},
+      "span": {"if": {"$ref": "#/$defs/patch"}, "then": {"$ref": "#/$defs/fields/span"}, "else": {"allOf": [{"$ref": "#/$defs/fields/span"}, {"required": ["actor", "start", "kind"]}]}},
+      "event": {"if": {"$ref": "#/$defs/patch"}, "then": {"$ref": "#/$defs/fields/event"}, "else": {"allOf": [{"$ref": "#/$defs/fields/event"}, {"required": ["t", "type"]}]}}
+    },
+
+    "fields": {
+      "manifest": {
+        "description": "Dataset-level settings. One per trace; id names the dataset.",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "record": true, "op": true, "id": true,
+          "name": {"type": "string"},
+          "time_unit": {"enum": ["s", "step"]},
+          "display_tz": {"type": "string", "description": "IANA zone for display, e.g. America/Los_Angeles."},
+          "capabilities": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "spans": {"type": "boolean"},
+              "action_spans": {"type": "boolean"},
+              "reasoning": {"type": "boolean"},
+              "channels": {"type": "boolean"},
+              "recipients": {"type": "boolean"},
+              "reply_to": {"type": "boolean"},
+              "task_tree": {"type": "boolean", "description": "Source provides tasks below the root (ground truth)."}
+            }
+          },
+          "attrs": {"$ref": "#/$defs/attrs"}
+        }
+      },
+      "actor": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "record": true, "op": true, "id": true,
+          "name": {"type": "string"},
+          "kind": {"enum": ["agent", "human", "system"]},
+          "role": {"type": "string", "description": "Free-form, e.g. organizer, viewer, planner."},
+          "attrs": {"$ref": "#/$defs/attrs", "description": "e.g. model, family, icon."}
+        }
+      },
+      "channel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "record": true, "op": true, "id": true,
+          "name": {"type": "string"},
+          "attrs": {"$ref": "#/$defs/attrs"}
+        }
+      },
+      "task": {
+        "description": "A node in a task tree. A task without parent_id is a root: the goal of an episode.",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "record": true, "op": true, "id": true,
+          "name": {"type": "string"},
+          "description": {"type": "string"},
+          "parent_id": {"oneOf": [{"$ref": "#/$defs/id"}, {"type": "null"}]},
+          "scope": {"enum": ["shared", "individual"]},
+          "assignees": {"$ref": "#/$defs/ids"},
+          "start": {"$ref": "#/$defs/time"},
+          "end": {"oneOf": [{"$ref": "#/$defs/time"}, {"type": "null"}]},
+          "status": {"enum": ["done", "abandoned", "blocked", "ongoing"]},
+          "attrs": {"$ref": "#/$defs/attrs"}
+        }
+      },
+      "episode": {
+        "description": "The unit a view loads: a root task pursued by a set of actors over a time window.",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "record": true, "op": true, "id": true,
+          "name": {"type": "string"},
+          "dataset_id": {"$ref": "#/$defs/id", "description": "The manifest this episode belongs to; may be omitted when a trace has one manifest."},
+          "root_task_id": {"$ref": "#/$defs/id"},
+          "start": {"$ref": "#/$defs/time"},
+          "end": {"oneOf": [{"$ref": "#/$defs/time"}, {"type": "null"}]},
+          "actors": {"$ref": "#/$defs/ids"},
+          "channels": {"$ref": "#/$defs/ids"},
+          "attrs": {"$ref": "#/$defs/attrs", "description": "e.g. condition, lineup; used for grouping in Compare."}
+        }
+      },
+      "message": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "record": true, "op": true, "id": true,
+          "t": {"$ref": "#/$defs/time"},
+          "sender": {"$ref": "#/$defs/id"},
+          "channel_id": {"$ref": "#/$defs/id"},
+          "recipients": {"$ref": "#/$defs/ids", "description": "Explicit addressees; omit for a broadcast."},
+          "reply_to": {"$ref": "#/$defs/ids"},
+          "text": {"type": "string"},
+          "reasoning": {"type": "string", "description": "Private reasoning behind the message, if the source has it."},
+          "episode_id": {"$ref": "#/$defs/id", "description": "Optional; otherwise membership is by time window and channel."},
+          "attrs": {"$ref": "#/$defs/attrs"}
+        }
+      },
+      "span": {
+        "description": "A stretch of activity by one actor. Spans nest (work -> action) via parent_id; task_id links to the task tree.",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "record": true, "op": true, "id": true,
+          "actor": {"$ref": "#/$defs/id"},
+          "start": {"$ref": "#/$defs/time"},
+          "end": {"oneOf": [{"$ref": "#/$defs/time"}, {"type": "null"}]},
+          "kind": {"enum": ["work", "wait", "action", "other"]},
+          "label": {"type": "string"},
+          "parent_id": {"$ref": "#/$defs/id"},
+          "task_id": {"$ref": "#/$defs/id"},
+          "episode_id": {"$ref": "#/$defs/id"},
+          "attrs": {
+            "type": "object",
+            "properties": {
+              "waiting_on": {
+                "type": "object",
+                "additionalProperties": false,
+                "minProperties": 1,
+                "properties": {
+                  "actor": {"$ref": "#/$defs/id"},
+                  "task": {"$ref": "#/$defs/id"},
+                  "external": {"type": "string"}
+                }
+              }
+            }
+          }
+        }
+      },
+      "event": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "record": true, "op": true, "id": true,
+          "t": {"$ref": "#/$defs/time"},
+          "actor": {"$ref": "#/$defs/id"},
+          "type": {"type": "string"},
+          "payload": {"type": "object"},
+          "episode_id": {"$ref": "#/$defs/id"}
+        }
+      }
+    }
+  }
+}

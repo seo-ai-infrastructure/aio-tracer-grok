@@ -1,0 +1,8 @@
+# Marker detection (collab/markers.py). Thresholds are heuristics to tune on the pilot.
+loops:
+  min_repeats: 4           # at least this many consecutive work spans by one actor...
+  min_similarity: 0.5      # ...each at least this similar to the previous one (difflib ratio)
+overlaps:
+  min_similarity: 0.6                      # agents count as duplicating work only if their descriptions match
+  min_duration: {s: 60, step: 1}           # ignore overlaps shorter than this
+  coordination_window: {s: 900, step: 5}   # links this close to the overlap count as coordination

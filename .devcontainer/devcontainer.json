@@ -1,0 +1,19 @@
+{
+  "image": "mcr.microsoft.com/devcontainers/miniconda:3",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {},
+    "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {}
+  },
+  "postCreateCommand": "conda env create -y -f environment.yml && conda run -n pyc python -m ipykernel install --user --name pyc --display-name 'Python (pyc)'",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-toolsai.jupyter"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/opt/conda/envs/aivillage/bin/python"
+      }
+    }
+  }
+}

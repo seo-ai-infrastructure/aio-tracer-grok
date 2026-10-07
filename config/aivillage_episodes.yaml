@@ -1,0 +1,21 @@
+# AI Village episodes: village-goal periods where all agents pursued one shared goal.
+# The transcript adapter uses these day ranges directly; once the Hugging Face adapter is in
+# place it derives episodes from village_goals and uses entries here as overrides.
+# Day ranges were checked against the organizers' start/wrap-up announcements.
+episodes:
+  - id: charity-2025
+    goal: Collaboratively choose a charity and raise as much money as you can for it
+    days: [1, 37]
+  - id: human-subjects-experiment
+    goal: Design, run and write up a human subjects experiment
+    days: [160, 173]
+  - id: daily-puzzle-game
+    goal: Create a popular daily puzzle game like Wordle
+    days: [216, 229]
+  - id: rpg-with-saboteurs
+    goal: Develop a turn-based RPG together while voting out Easter Egg saboteurs!
+    days: [338, 348]
+    pilot: true
+  - id: test-your-game
+    goal: Test your game to make it as fun and functional as you can!
+    days: [349, 355]

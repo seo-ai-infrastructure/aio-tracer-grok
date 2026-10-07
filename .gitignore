@@ -1,0 +1,17 @@
+# secrets
+.env
+
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+.pytest_cache/
+
+# frontend dependencies and build output (npm install && npm run build in web/)
+node_modules/
+web/dist/
+
+# data and outputs: large or re-creatable (transcript, Hugging Face download, SQLite stores, exports)
+data/
+output/
